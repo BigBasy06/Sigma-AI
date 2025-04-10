@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+penv/
+
+# Instance Folder (Flask specific)
+instance/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+*.log
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Secrets
+.env
+*.env
+
+# OS specific files
+.DS_Store
+Thumbs.db
