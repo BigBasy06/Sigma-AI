@@ -3,41 +3,38 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.[oa]
 *.so
-.Python
-
-# Environments
-.venv/
-venv/
-env/
-ENV/
-penv/
-
-# Instance Folder (Flask specific)
-instance/
-
-# Build artifacts
+*.egg
+*.egg-info/
 dist/
 build/
-*.egg-info/
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-*.log
+*.manifest
+*.spec
 
-# IDE specific files
-.idea/
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Instance folder (Flask specific)
+instance/
+
+# Environment variables
+.env*
+!.env.example
+
+# IDE / Editor specific
 .vscode/
+.idea/
 *.sublime-project
 *.sublime-workspace
 
-# Secrets
-.env
-*.env
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
 
-# OS specific files
+# macOS
 .DS_Store
-Thumbs.db

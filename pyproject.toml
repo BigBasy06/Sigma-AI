@@ -1,0 +1,33 @@
+[tool.black]
+line-length = 88
+target-version = ['py310'] # Specify your target Python version
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203" # Ignore whitespace before ':' (black compatible)
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "instance",
+    "build",
+    "dist",
+]
+
+# If using Ruff instead of flake8+black:
+# [tool.ruff]
+# line-length = 88
+# select = ["E", "F", "W", "I"] # Example rule selection (flake8 equivalent + isort)
+# ignore = ["E203"]
+# exclude = [
+#     ".git",
+#     "__pycache__",
+#     ".venv",
+#     "instance",
+#     "build",
+#     "dist",
+# ]
+# target-version = "py310"
+
+# [tool.ruff.format]
+# quote-style = "double"
