@@ -1,28 +1,28 @@
 # Dockerfile
 
 # --- Build Stage ---
-# Use an official Python runtime as a parent image
-# Choose a specific version matching your development environment (e.g., 3.10)
 FROM python:3.10-slim-bullseye as builder
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies that might be needed for Python packages (if any)
-# Example: RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
-# Add any specific build dependencies for your project here if needed
+# ---> ADD THIS STEP <---
+# Upgrade pip and install essential build tools
+RUN python -m pip install --upgrade pip wheel setuptools && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends gcc build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-# Copy only requirements.txt first to leverage Docker cache
 COPY requirements.txt .
-# Add gunicorn (or waitress) for production serving - will be added to requirements.txt separately
-# RUN echo "gunicorn" >> requirements.txt # We'll modify the actual file instead
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
-
+# Use pip install to build wheels - easier to debug than pip wheel --no-deps directly sometimes
+# If using pip wheel, ensure dependencies are handled correctly or remove --no-deps temporarily if issues persist.
+# Let's try a standard install which builds wheels implicitly:
+RUN pip install --no-cache-dir -r requirements.txt --wheel-dir /app/wheels
+# OR if sticking with pip wheel, try without --no-deps first, or ensure build-essential is enough:
+# RUN pip wheel --no-cache-dir --wheel-dir /app/wheels -r requirements.txt
 
 # --- Final Stage ---
 # Use a slim Python image for the final container
