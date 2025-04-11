@@ -1,33 +1,58 @@
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flaskr"
+version = "0.0.1"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["flaskr*"]
+exclude = ["tests*"]
+
+# --- Tool Configurations ---
 [tool.black]
 line-length = 88
-target-version = ['py310'] # Specify your target Python version
+target-version = ['py310']
 
 [tool.flake8]
 max-line-length = 88
-extend-ignore = "E203" # Ignore whitespace before ':' (black compatible)
+extend-ignore = "E203"
 exclude = [
     ".git",
     "__pycache__",
     ".venv",
     "instance",
+    "migrations",
     "build",
     "dist",
 ]
 
-# If using Ruff instead of flake8+black:
-# [tool.ruff]
-# line-length = 88
-# select = ["E", "F", "W", "I"] # Example rule selection (flake8 equivalent + isort)
-# ignore = ["E203"]
-# exclude = [
-#     ".git",
-#     "__pycache__",
-#     ".venv",
-#     "instance",
-#     "build",
-#     "dist",
-# ]
-# target-version = "py310"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# --- REMOVE 'env' SECTION ---
+# addopts = "-v" # Optionally uncomment for verbose output
 
+[tool.coverage.run]
+source = ["flaskr"]
+# omit = ["flaskr/__init__.py"]
+
+[tool.coverage.report]
+# fail_under = 50
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+# --- Ruff Config (Optional) ---
+# [tool.ruff]
+# ...
 # [tool.ruff.format]
-# quote-style = "double"
+# ...
