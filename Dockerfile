@@ -18,6 +18,7 @@ COPY requirements.txt .
 # ---> FIX THIS LINE <---
 # Build wheels for all dependencies defined in requirements.txt
 # Store the built wheels in /app/wheels, do not install them here.
+RUN cat requirements.txt # Add this line to debug encoding
 RUN pip wheel --no-cache-dir --wheel-dir /app/wheels -r requirements.txt
 # ^^^ Changed 'install' to 'wheel'
 
