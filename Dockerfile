@@ -18,7 +18,6 @@ COPY requirements.txt .
 # ---> FIX THIS LINE <---
 # Build wheels for all dependencies defined in requirements.txt
 # Store the built wheels in /app/wheels, do not install them here.
-RUN cat requirements.txt # Add this line to debug encoding
 RUN pip wheel --no-cache-dir --wheel-dir /app/wheels -r requirements.txt
 # ^^^ Changed 'install' to 'wheel'
 
@@ -49,6 +48,8 @@ RUN pip install --no-cache-dir /wheels/*
 # Copy the application code
 # Ensure .dockerignore is set up to exclude .git, venv, __pycache__, etc.
 COPY . .
+COPY start.sh .
+RUN chmod +x start.sh
 
 # Change ownership to the non-root user
 RUN chown -R app:app /app
@@ -62,6 +63,5 @@ USER app
 
 # Define the command to run the application using Gunicorn
 # Render's "Start Command" will override this, but it's good to have a default.
-# The actual start command in Render will include migrations:
-# flask db upgrade && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 "flaskr:create_app()"
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "flaskr:create_app()"]
+# The actual start command in Render will be "sh start.sh"
+CMD ["sh", "start.sh"]
