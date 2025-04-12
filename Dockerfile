@@ -1,5 +1,3 @@
-# Dockerfile
-
 # --- Build Stage ---
 FROM python:3.10-slim-bullseye as builder
 
@@ -8,8 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-# ---> ADD THIS STEP <---
-# Upgrade pip and install essential build tools
+# Upgrade pip and install essential build tools needed for building wheels
 RUN python -m pip install --upgrade pip wheel setuptools && \
     apt-get update && \
     apt-get install -y --no-install-recommends gcc build-essential && \
@@ -17,12 +14,12 @@ RUN python -m pip install --upgrade pip wheel setuptools && \
 
 # Install Python dependencies
 COPY requirements.txt .
-# Use pip install to build wheels - easier to debug than pip wheel --no-deps directly sometimes
-# If using pip wheel, ensure dependencies are handled correctly or remove --no-deps temporarily if issues persist.
-# Let's try a standard install which builds wheels implicitly:
-RUN pip install --no-cache-dir -r requirements.txt --wheel-dir /app/wheels
-# OR if sticking with pip wheel, try without --no-deps first, or ensure build-essential is enough:
-# RUN pip wheel --no-cache-dir --wheel-dir /app/wheels -r requirements.txt
+
+# ---> FIX THIS LINE <---
+# Build wheels for all dependencies defined in requirements.txt
+# Store the built wheels in /app/wheels, do not install them here.
+RUN pip wheel --no-cache-dir --wheel-dir /app/wheels -r requirements.txt
+# ^^^ Changed 'install' to 'wheel'
 
 # --- Final Stage ---
 # Use a slim Python image for the final container
@@ -39,10 +36,14 @@ WORKDIR /app
 # Create a non-root user and group
 RUN addgroup --system app && adduser --system --ingroup app app
 
-# Copy installed dependencies from builder stage
+# Copy built wheels from builder stage
 COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
-RUN pip install --no-cache /wheels/*
+# Copy requirements.txt is no longer needed here if installing from wheels directly
+# COPY --from=builder /app/requirements.txt .
+
+# Install dependencies from the pre-built wheels
+RUN pip install --no-cache-dir /wheels/*
+# ^^^ Use --no-cache-dir consistently (old --no-cache is deprecated)
 
 # Copy the application code
 # Ensure .dockerignore is set up to exclude .git, venv, __pycache__, etc.
@@ -61,5 +62,5 @@ USER app
 # Define the command to run the application using Gunicorn
 # Render's "Start Command" will override this, but it's good to have a default.
 # The actual start command in Render will include migrations:
-# flask db upgrade && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 flaskr:create_app()
+# flask db upgrade && gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 "flaskr:create_app()"
 CMD ["gunicorn", "--bind", "0.0.0.0:10000", "flaskr:create_app()"]
